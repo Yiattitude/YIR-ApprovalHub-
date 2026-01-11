@@ -330,9 +330,27 @@ Implement log analysis:
 
 ## Regular Security Maintenance
 
+### Dependency Updates
+
+**Critical**: Always keep dependencies up to date with security patches.
+
+**MySQL Connector**:
+- ✅ Using `mysql-connector-j` version 8.2.0 (patched)
+- ⚠️ Previous `mysql-connector-java` 8.0.33 had takeover vulnerability
+- 🔄 Check for updates regularly: https://dev.mysql.com/downloads/connector/j/
+
+**How to check for vulnerabilities**:
+```bash
+# Maven dependency check
+mvn dependency-check:check
+
+# Or use GitHub Dependabot
+# Or OWASP Dependency-Check
+```
+
 ### Monthly Tasks
+- [ ] **Update dependencies for security patches**
 - [ ] Review user accounts and permissions
-- [ ] Update dependencies for security patches
 - [ ] Review access logs for anomalies
 - [ ] Test backup restoration
 - [ ] Review and update firewall rules
