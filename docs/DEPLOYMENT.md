@@ -146,9 +146,23 @@ logging.level.com.yir.approvalhub=INFO
 # 使用生产配置启动
 java -jar target/approval-hub-1.0.0.jar --spring.profiles.active=prod
 
+# 设置必需的环境变量
+export DB_URL=jdbc:mysql://your-db-host:3306/approval_hub?useSSL=true&serverTimezone=UTC
+export DB_USERNAME=your_username
+export DB_PASSWORD=your_password
+export JWT_SECRET=$(openssl rand -base64 64)
+
+# 启动服务
+java -jar target/approval-hub-1.0.0.jar --spring.profiles.active=prod
+
 # 或使用nohup后台运行
 nohup java -jar target/approval-hub-1.0.0.jar --spring.profiles.active=prod > app.log 2>&1 &
 ```
+
+**重要提示**:
+- 生产环境必须设置JWT_SECRET环境变量
+- 生产环境使用application-prod.properties配置
+- SQL日志在生产环境中已禁用
 
 4. **配置为系统服务**
 
