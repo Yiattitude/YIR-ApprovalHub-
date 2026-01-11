@@ -166,9 +166,8 @@ public class ApplicationService {
         // Simple fixed workflow: Department Manager -> HR Manager
         User applicant = application.getApplicant();
 
-        // Find approvers (for demo, we'll use users with APPROVER role)
-        List<User> approvers = userRepository.findAll().stream()
-                .filter(u -> u.getRole() == User.UserRole.APPROVER && u.getEnabled())
+        // Find approvers by querying database directly for better performance
+        List<User> approvers = userRepository.findByRoleAndEnabled(User.UserRole.APPROVER, true).stream()
                 .limit(2)
                 .toList();
 

@@ -112,10 +112,25 @@ source database/schema.sql
 
 2. **修改配置文件**
 编辑 `src/main/resources/application.properties`，修改数据库连接信息：
+
+**方式一：直接修改配置文件（开发环境）**
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/approval_hub?useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
 spring.datasource.password=your_password
+```
+
+**方式二：使用环境变量（推荐，生产环境）**
+```bash
+# Linux/Mac
+export DB_USERNAME=your_username
+export DB_PASSWORD=your_password
+export JWT_SECRET=your_secure_random_secret_key
+
+# Windows
+set DB_USERNAME=your_username
+set DB_PASSWORD=your_password
+set JWT_SECRET=your_secure_random_secret_key
 ```
 
 3. **启动后端服务**

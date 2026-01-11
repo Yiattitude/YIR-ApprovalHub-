@@ -352,7 +352,23 @@ tail -f logs/approval-hub.log
 ### 2. 使用HTTPS
 配置SSL证书，强制使用HTTPS访问。
 
-### 3. 配置防火墙
+### 3. 使用环境变量管理敏感配置
+**永远不要在配置文件中硬编码敏感信息！**
+
+```bash
+# 在生产环境中设置环境变量
+export DB_USERNAME=your_secure_username
+export DB_PASSWORD=your_secure_password
+export JWT_SECRET=$(openssl rand -base64 64)
+
+# 或者使用配置管理工具（如Kubernetes Secrets）
+kubectl create secret generic app-secrets \
+  --from-literal=db-username=your_username \
+  --from-literal=db-password=your_password \
+  --from-literal=jwt-secret=your_jwt_secret
+```
+
+### 4. 配置防火墙
 ```bash
 # 只开放必要的端口
 sudo ufw allow 80/tcp
@@ -364,9 +380,12 @@ sudo ufw enable
 - 使用强密码
 - 限制数据库访问IP
 - 定期备份数据
+- **重要**: 不要在配置文件中使用默认的root密码
+- 使用环境变量存储数据库凭证
 
 ### 5. 应用安全
-- 更新JWT密钥为强随机字符串
+- 更新JWT密钥为强随机字符串（至少64字符）
+- 使用环境变量存储JWT密钥，不要硬编码
 - 启用CORS限制
 - 配置合适的会话超时时间
 
