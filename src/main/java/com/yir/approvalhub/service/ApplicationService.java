@@ -200,6 +200,9 @@ public class ApplicationService {
     }
 
     private String generateApplicationNo(String prefix) {
-        return prefix + "-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        // Use combination of timestamp and random UUID for better uniqueness
+        long timestamp = System.currentTimeMillis();
+        String randomPart = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        return String.format("%s-%d-%s", prefix, timestamp, randomPart);
     }
 }
