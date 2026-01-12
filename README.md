@@ -145,6 +145,13 @@ java -jar target/approval-hub-1.0.0.jar
 
 后端服务默认运行在 `http://localhost:8080`
 
+Sample data initialized successfully!
+Admin: admin/admin123
+Manager1: manager1/manager123
+HR Manager: hrmanager/hr123
+Employee1: employee1/emp123
+Employee2: employee2/emp123
+
 ### 前端启动步骤
 
 1. **安装依赖**
