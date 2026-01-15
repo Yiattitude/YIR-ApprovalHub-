@@ -86,5 +86,76 @@ export default {
 
     processApprovalTask(taskId, decision) {
         return apiClient.post(`/approvals/${taskId}/process`, decision);
+    },
+
+    // User Management API
+    getAllUsers() {
+        return apiClient.get('/users');
+    },
+
+    getUserById(id) {
+        return apiClient.get(`/users/${id}`);
+    },
+
+    createUser(user) {
+        return apiClient.post('/users', user);
+    },
+
+    updateUser(id, user) {
+        return apiClient.put(`/users/${id}`, user);
+    },
+
+    deleteUser(id) {
+        return apiClient.delete(`/users/${id}`);
+    },
+
+    getUsersByDepartment(departmentId) {
+        return apiClient.get(`/users/department/${departmentId}`);
+    },
+
+    getUsersByRole(role) {
+        return apiClient.get(`/users/role/${role}`);
+    },
+
+    // Department Management API
+    getAllDepartments() {
+        return apiClient.get('/departments');
+    },
+
+    getDepartmentById(id) {
+        return apiClient.get(`/departments/${id}`);
+    },
+
+    createDepartment(department) {
+        return apiClient.post('/departments', department);
+    },
+
+    updateDepartment(id, department) {
+        return apiClient.put(`/departments/${id}`, department);
+    },
+
+    deleteDepartment(id) {
+        return apiClient.delete(`/departments/${id}`);
+    },
+
+    // Position Management API
+    getAllPositions() {
+        return apiClient.get('/positions');
+    },
+
+    getPositionById(id) {
+        return apiClient.get(`/positions/${id}`);
+    },
+
+    createPosition(position) {
+        return apiClient.post('/positions', position);
+    },
+
+    updatePosition(id, position) {
+        return apiClient.put(`/positions/${id}`, position);
+    },
+
+    deletePosition(id) {
+        return apiClient.delete(`/positions/${id}`);
     }
 };

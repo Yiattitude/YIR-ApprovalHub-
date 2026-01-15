@@ -22,6 +22,15 @@
           <el-menu-item index="/pending-approvals" v-if="isApprover">
             <span>待审批任务</span>
           </el-menu-item>
+          <el-menu-item index="/user-management" v-if="isAdmin">
+            <span>用户管理</span>
+          </el-menu-item>
+          <el-menu-item index="/department-management" v-if="isAdmin">
+            <span>部门管理</span>
+          </el-menu-item>
+          <el-menu-item index="/position-management" v-if="isAdmin">
+            <span>岗位管理</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main class="dashboard-main">
@@ -47,6 +56,10 @@ export default {
 
     const isApprover = computed(() => {
       return user.value?.role === 'APPROVER' || user.value?.role === 'ADMIN';
+    });
+
+    const isAdmin = computed(() => {
+      return user.value?.role === 'ADMIN';
     });
 
     const roleText = computed(() => {
@@ -81,6 +94,7 @@ export default {
       user,
       activeMenu,
       isApprover,
+      isAdmin,
       roleText,
       handleLogout
     };

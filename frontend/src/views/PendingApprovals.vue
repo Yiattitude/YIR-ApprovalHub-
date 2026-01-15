@@ -2,15 +2,31 @@
   <div>
     <h2>待审批任务</h2>
     <el-table :data="tasks" style="width: 100%" v-loading="loading">
-      <el-table-column prop="application.applicationNo" label="申请编号" width="200"></el-table-column>
-      <el-table-column prop="application.applicationType" label="申请类型" width="120">
+      <el-table-column prop="application.applicationNo" label="申请编号" width="200">
         <template #default="scope">
-          {{ scope.row.application.applicationType === 'LEAVE' ? '请假' : '报销' }}
+          {{ scope.row.application?.applicationNo || '-' }}
         </template>
       </el-table-column>
-      <el-table-column prop="application.title" label="标题" width="200"></el-table-column>
-      <el-table-column prop="stepName" label="审批步骤" width="120"></el-table-column>
-      <el-table-column prop="application.applicant.fullName" label="申请人" width="120"></el-table-column>
+      <el-table-column prop="application.applicationType" label="申请类型" width="120">
+        <template #default="scope">
+          {{ scope.row.application?.applicationType === 'LEAVE' ? '请假' : scope.row.application?.applicationType === 'REIMBURSEMENT' ? '报销' : '-' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="application.title" label="标题" width="200">
+        <template #default="scope">
+          {{ scope.row.application?.title || '-' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="stepName" label="审批步骤" width="120">
+        <template #default="scope">
+          {{ scope.row.stepName || '-' }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="application.applicant.fullName" label="申请人" width="120">
+        <template #default="scope">
+          {{ scope.row.application?.applicant?.fullName || '-' }}
+        </template>
+      </el-table-column>
       <el-table-column prop="createdAt" label="创建时间" width="180">
         <template #default="scope">
           {{ formatDateTime(scope.row.createdAt) }}
@@ -18,9 +34,9 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right">
         <template #default="scope">
-          <el-button size="small" @click="viewDetail(scope.row)">查看详情</el-button>
-          <el-button size="small" type="success" @click="handleApprove(scope.row)">同意</el-button>
-          <el-button size="small" type="danger" @click="handleReject(scope.row)">拒绝</el-button>
+          <el-button size="small" @click="viewDetail(scope.row)" :disabled="!scope.row.application">查看详情</el-button>
+          <el-button size="small" type="success" @click="handleApprove(scope.row)" :disabled="!scope.row.application">同意</el-button>
+          <el-button size="small" type="danger" @click="handleReject(scope.row)" :disabled="!scope.row.application">拒绝</el-button>
         </template>
       </el-table-column>
     </el-table>

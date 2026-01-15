@@ -3,7 +3,8 @@ package com.yir.approvalhub.service;
 import com.yir.approvalhub.dto.ApprovalDecisionRequest;
 import com.yir.approvalhub.entity.*;
 import com.yir.approvalhub.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,17 +15,22 @@ import java.util.List;
 @Service
 public class ApprovalService {
 
-    @Autowired
-    private ApprovalTaskRepository approvalTaskRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ApprovalService.class);
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
+    private final ApprovalTaskRepository approvalTaskRepository;
+    private final ApplicationRepository applicationRepository;
+    private final UserRepository userRepository;
+    private final ApprovalHistoryRepository approvalHistoryRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ApprovalHistoryRepository approvalHistoryRepository;
+    public ApprovalService(ApprovalTaskRepository approvalTaskRepository,
+                          ApplicationRepository applicationRepository,
+                          UserRepository userRepository,
+                          ApprovalHistoryRepository approvalHistoryRepository) {
+        this.approvalTaskRepository = approvalTaskRepository;
+        this.applicationRepository = applicationRepository;
+        this.userRepository = userRepository;
+        this.approvalHistoryRepository = approvalHistoryRepository;
+    }
 
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -46,7 +52,7 @@ public class ApprovalService {
 
     @Transactional
     public ApprovalTask processApprovalTask(Long taskId, ApprovalDecisionRequest request) {
-        ApprovalTask task = approvalTaskRepository.findById(taskId)
+        ApprovalTask task = approvalTaskRepository.findByIdWithApplication(taskId)
                 .orElseThrow(() -> new RuntimeException("Approval task not found"));
 
         User currentUser = getCurrentUser();
@@ -85,6 +91,7 @@ public class ApprovalService {
             application.setStatus(Application.ApplicationStatus.REJECTED);
             application.setRejectionReason(request.getComment());
             application.setCompletedAt(LocalDateTime.now());
+            logger.info("申请 {} 被拒绝，状态更新为 REJECTED", application.getId());
 
             // Skip remaining pending tasks
             List<ApprovalTask> remainingTasks = approvalTaskRepository
@@ -102,9 +109,12 @@ public class ApprovalService {
             boolean allApproved = allTasks.stream()
                     .allMatch(t -> t.getStatus() == ApprovalTask.TaskStatus.APPROVED);
 
+            logger.info("申请 {} 的所有审批任务: 已批准={}, 总数={}", application.getId(), allApproved, allTasks.size());
+            
             if (allApproved) {
                 application.setStatus(Application.ApplicationStatus.APPROVED);
                 application.setCompletedAt(LocalDateTime.now());
+                logger.info("申请 {} 所有审批已完成，状态更新为 APPROVED", application.getId());
             }
         }
 

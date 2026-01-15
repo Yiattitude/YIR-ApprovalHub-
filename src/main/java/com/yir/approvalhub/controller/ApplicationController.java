@@ -3,7 +3,6 @@ package com.yir.approvalhub.controller;
 import com.yir.approvalhub.dto.*;
 import com.yir.approvalhub.entity.*;
 import com.yir.approvalhub.service.ApplicationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +14,11 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ApplicationController {
 
-    @Autowired
-    private ApplicationService applicationService;
+    private final ApplicationService applicationService;
+
+    public ApplicationController(ApplicationService applicationService) {
+        this.applicationService = applicationService;
+    }
 
     @PostMapping("/leave")
     public ResponseEntity<?> createLeaveApplication(@Valid @RequestBody LeaveApplicationRequest request) {
