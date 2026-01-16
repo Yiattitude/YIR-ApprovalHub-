@@ -3,7 +3,8 @@ package com.yir.approvalhub.service;
 import com.yir.approvalhub.dto.*;
 import com.yir.approvalhub.entity.*;
 import com.yir.approvalhub.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,23 +16,28 @@ import java.util.UUID;
 @Service
 public class ApplicationService {
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
 
-    @Autowired
-    private LeaveApplicationRepository leaveApplicationRepository;
+    private final ApplicationRepository applicationRepository;
+    private final LeaveApplicationRepository leaveApplicationRepository;
+    private final ReimbursementApplicationRepository reimbursementApplicationRepository;
+    private final UserRepository userRepository;
+    private final ApprovalTaskRepository approvalTaskRepository;
+    private final ApprovalHistoryRepository approvalHistoryRepository;
 
-    @Autowired
-    private ReimbursementApplicationRepository reimbursementApplicationRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ApprovalTaskRepository approvalTaskRepository;
-
-    @Autowired
-    private ApprovalHistoryRepository approvalHistoryRepository;
+    public ApplicationService(ApplicationRepository applicationRepository,
+                            LeaveApplicationRepository leaveApplicationRepository,
+                            ReimbursementApplicationRepository reimbursementApplicationRepository,
+                            UserRepository userRepository,
+                            ApprovalTaskRepository approvalTaskRepository,
+                            ApprovalHistoryRepository approvalHistoryRepository) {
+        this.applicationRepository = applicationRepository;
+        this.leaveApplicationRepository = leaveApplicationRepository;
+        this.reimbursementApplicationRepository = reimbursementApplicationRepository;
+        this.userRepository = userRepository;
+        this.approvalTaskRepository = approvalTaskRepository;
+        this.approvalHistoryRepository = approvalHistoryRepository;
+    }
 
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -149,7 +155,12 @@ public class ApplicationService {
 
     public List<Application> getMyApplications() {
         User currentUser = getCurrentUser();
-        return applicationRepository.findByApplicantOrderByCreatedAtDesc(currentUser);
+        List<Application> applications = applicationRepository.findByApplicantOrderByCreatedAtDesc(currentUser);
+        logger.info("用户 {} 查询到 {} 个申请", currentUser.getUsername(), applications.size());
+        for (Application app : applications) {
+            logger.info("申请 {}: 状态={}, 编号={}", app.getId(), app.getStatus(), app.getApplicationNo());
+        }
+        return applications;
     }
 
     public Application getApplicationById(Long id) {
@@ -163,12 +174,12 @@ public class ApplicationService {
     }
 
     private void createApprovalWorkflow(Application application) {
-        // Simple fixed workflow: Department Manager -> HR Manager
+        // Simple fixed workflow: Department Manager only
         User applicant = application.getApplicant();
 
         // Find approvers by querying database directly for better performance
         List<User> approvers = userRepository.findByRoleAndEnabled(User.UserRole.APPROVER, true).stream()
-                .limit(2)
+                .limit(1)
                 .toList();
 
         if (approvers.isEmpty()) {
@@ -181,7 +192,7 @@ public class ApplicationService {
             task.setApplication(application);
             task.setApprover(approver);
             task.setStepOrder(stepOrder);
-            task.setStepName(stepOrder == 1 ? "部门经理审批" : "HR经理审批");
+            task.setStepName("部门经理审批");
             task.setStatus(ApprovalTask.TaskStatus.PENDING);
             approvalTaskRepository.save(task);
             stepOrder++;

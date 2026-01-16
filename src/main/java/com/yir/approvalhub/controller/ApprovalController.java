@@ -4,7 +4,6 @@ import com.yir.approvalhub.dto.ApiResponse;
 import com.yir.approvalhub.dto.ApprovalDecisionRequest;
 import com.yir.approvalhub.entity.ApprovalTask;
 import com.yir.approvalhub.service.ApprovalService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +15,11 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ApprovalController {
 
-    @Autowired
-    private ApprovalService approvalService;
+    private final ApprovalService approvalService;
+
+    public ApprovalController(ApprovalService approvalService) {
+        this.approvalService = approvalService;
+    }
 
     @GetMapping("/pending")
     public ResponseEntity<?> getMyPendingTasks() {

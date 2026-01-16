@@ -1,6 +1,9 @@
 <template>
   <div>
     <h2>我的申请</h2>
+    <el-button type="primary" @click="loadApplications" :loading="loading" style="margin-bottom: 20px">
+      刷新
+    </el-button>
     <el-table :data="applications" style="width: 100%" v-loading="loading">
       <el-table-column prop="applicationNo" label="申请编号" width="200"></el-table-column>
       <el-table-column prop="applicationType" label="申请类型" width="120">
@@ -35,7 +38,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import api from '../services/api';
@@ -46,6 +49,7 @@ export default {
     const router = useRouter();
     const applications = ref([]);
     const loading = ref(false);
+    let refreshInterval = null;
 
     const loadApplications = async () => {
       loading.value = true;
@@ -128,11 +132,21 @@ export default {
 
     onMounted(() => {
       loadApplications();
+      refreshInterval = setInterval(() => {
+        loadApplications();
+      }, 30000);
+    });
+
+    onUnmounted(() => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
     });
 
     return {
       applications,
       loading,
+      loadApplications,
       viewDetail,
       submitApplication,
       withdrawApplication,

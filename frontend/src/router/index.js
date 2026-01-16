@@ -6,6 +6,9 @@ import NewLeaveApplication from '../views/NewLeaveApplication.vue';
 import NewReimbursementApplication from '../views/NewReimbursementApplication.vue';
 import PendingApprovals from '../views/PendingApprovals.vue';
 import ApplicationDetail from '../views/ApplicationDetail.vue';
+import UserManagement from '../views/UserManagement.vue';
+import DepartmentManagement from '../views/DepartmentManagement.vue';
+import PositionManagement from '../views/PositionManagement.vue';
 
 const routes = [
   {
@@ -43,6 +46,21 @@ const routes = [
         path: 'application/:id',
         name: 'ApplicationDetail',
         component: ApplicationDetail
+      },
+      {
+        path: 'user-management',
+        name: 'UserManagement',
+        component: UserManagement
+      },
+      {
+        path: 'department-management',
+        name: 'DepartmentManagement',
+        component: DepartmentManagement
+      },
+      {
+        path: 'position-management',
+        name: 'PositionManagement',
+        component: PositionManagement
       }
     ]
   }
